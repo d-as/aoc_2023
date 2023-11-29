@@ -1,7 +1,17 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { DAY_MILLISECONDS, HOUR_MILLISECONDS, INPUT_PATH, INPUT_PREFIX, MINUTE_MILLISECONDS, PUZZLE_COUNT, SECOND_MILLISECONDS, SOLUTION_PREFIX } from './constants.js';
+
+import {
+  DAY_MILLISECONDS,
+  HOUR_MILLISECONDS,
+  INPUT_PATH,
+  INPUT_PREFIX,
+  MINUTE_MILLISECONDS,
+  PUZZLE_COUNT,
+  SECOND_MILLISECONDS,
+  SOLUTION_PREFIX,
+} from './constants.js';
 
 export const getYear = (date: Date): number => (
   date.getFullYear()
@@ -15,7 +25,7 @@ export const Assert = {
     return year;
   },
   validDay: (day: number): number => {
-    if (day < 1 || day > 25 || !Number.isInteger(day)) {
+    if (day < 1 || day > PUZZLE_COUNT || !Number.isInteger(day)) {
       throw new Error(`Invalid day: ${day}`);
     }
     return day;
