@@ -66,6 +66,18 @@ export const getReleasedPuzzleCount = (date: Date): number => (
   )
 );
 
+export const formatDate = (date: Date): string => (
+  [
+    Intl.DateTimeFormat([], { weekday: 'long' }).format(date),
+    Intl.DateTimeFormat([], {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    })
+      .format(date)
+  ]
+    .join(' ')
+);
+
 export const getTimeText = (value: number, text: string): string | undefined => (
   value > 0 ? `${value} ${text}${plural(value)}` : undefined
 );
@@ -87,14 +99,16 @@ export const getNextPuzzleText = (date: Date, releasedPuzzleCount: number): stri
   const minutes = Math.floor((timeToNextPuzzle % HOUR_MILLISECONDS) / MINUTE_MILLISECONDS);
   const seconds = Math.floor((timeToNextPuzzle % MINUTE_MILLISECONDS) / SECOND_MILLISECONDS);
 
-  return [
+  const nextPuzzleText = [
     getTimeText(days, 'day'),
     getTimeText(hours, 'hour'),
     getTimeText(minutes, 'minute'),
     getTimeText(seconds, 'second'),
   ]
     .filter(n => n)
-    .join(', ')
+    .join(', ');
+
+  return [nextPuzzleText, `(${formatDate(nextRelease)})`].join(' ');
 };
 
 export const getInputFileName = (day: number) => (

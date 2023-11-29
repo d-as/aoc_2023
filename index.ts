@@ -14,6 +14,7 @@ import {
 
 import {
   Assert,
+  formatDate,
   getDayFromFilename,
   getInputFileName,
   getInputURL,
@@ -41,7 +42,9 @@ const releasedPuzzleCount = getReleasedPuzzleCount(currentDate);
 const inputFiles = fs.readdirSync(INPUT_PATH);
 
 console.log('Advent of Code', year);
-console.log('Current date:', Intl.DateTimeFormat().format(currentDate));
+
+console.log('Current date:', formatDate(currentDate));
+
 console.log('Released puzzles:', `${releasedPuzzleCount}/${PUZZLE_COUNT}`);
 console.log('Next puzzle in:', getNextPuzzleText(currentDate, releasedPuzzleCount));
 
