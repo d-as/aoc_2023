@@ -46,6 +46,11 @@ console.log('Advent of Code', year);
 console.log('Current date:', formatDate(currentDate));
 
 console.log('Released puzzles:', `${releasedPuzzleCount}/${PUZZLE_COUNT}`);
+
+if (releasedPuzzleCount > 0) {
+  console.log('Latest puzzle:', `https://adventofcode.com/${year}/day/${releasedPuzzleCount}`);
+}
+
 console.log('Next puzzle in:', getNextPuzzleText(currentDate, releasedPuzzleCount));
 
 const inputFilesToBeFetched = range(releasedPuzzleCount, 1)
@@ -98,7 +103,7 @@ const [latestSolution] = fs.readdirSync(SOLUTIONS_PATH)
 if (latestSolution) {
   console.log(`Executing ${latestSolution}:\n`);
 
-  exec(`ts-node-esm ${path.join(SOLUTIONS_PATH, latestSolution)}`, (error, stdout, stderr) => {
+  exec(`node --loader ts-node/esm ${path.join(SOLUTIONS_PATH, latestSolution)}`, (error, stdout, stderr) => {
     if (error) {
       return console.error(error);
     } else if (stdout) {

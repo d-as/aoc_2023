@@ -144,3 +144,15 @@ export const getInputLines = (importMeta: ImportMeta): string[] => {
 
   return fs.readFileSync(inputPath).toString().split('\n');
 };
+
+export const first = <T>(items?: T[]): T | undefined => {
+  if (!items) {
+    return undefined;
+  }
+  const [value] = items;
+  return value;
+}
+
+export const last = <T>(items?: T[]): T | undefined => (
+  items ? items[items.length - 1] : undefined
+);
