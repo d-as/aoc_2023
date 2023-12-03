@@ -164,3 +164,7 @@ export const last = <T>(items?: T[]): T | undefined => (
 export const lastDefined = <T>(items?: T[]): T => (
   last(items) as T
 );
+
+export const logResults = (...results: number[]): void => {
+  results.forEach((result, i) => console.log(`Part ${i + 1}: ${Intl.NumberFormat().format(result)} (${result})`));
+}
