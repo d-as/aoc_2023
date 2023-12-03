@@ -6,7 +6,7 @@ const DIGITS = [
   'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
 ];
 
-const DIGIT_REGEX_1 = /[0-9]/;
+const DIGIT_REGEX_1 = /\d/;
 const DIGIT_REGEX_2 = new RegExp(`(?=(${DIGIT_REGEX_1.source}|${DIGITS.join('|')}))`, 'g');
 
 const isDigit = (digit: string): boolean => (

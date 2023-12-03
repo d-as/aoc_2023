@@ -153,6 +153,14 @@ export const first = <T>(items?: T[]): T | undefined => {
   return value;
 }
 
+export const firstDefined = <T>(items?: T[]): T => (
+  first(items) as T
+);
+
 export const last = <T>(items?: T[]): T | undefined => (
   items ? items[items.length - 1] : undefined
+);
+
+export const lastDefined = <T>(items?: T[]): T => (
+  last(items) as T
 );
