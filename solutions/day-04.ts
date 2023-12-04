@@ -33,15 +33,23 @@ const parseCard = (line: string): Card | undefined => {
 };
 
 const cards = input.map(parseCard).filter(c => c) as Card[];
+const winningCardsCache = new Map<number, number>();
+
+const getCachedCardCount = (card: Card, matchCount: number): number => {
+  const cachedCount = winningCardsCache.get(card.id);
+
+  if (cachedCount) {
+    return cachedCount;
+  }
+
+  const count = range(matchCount, card.id).reduce((sum, cardIndex) => sum + getWinningCardCount(cards[cardIndex]), 0);
+  winningCardsCache.set(card.id, count);
+  return count;
+};
 
 const getWinningCardCount = (card: Card): number => {
   const matchCount = card.yourNumbers.filter(number => card.winningNumbers.includes(number)).length;
-
-  return 1 + (
-    matchCount
-      ? range(matchCount, card.id).reduce((sum, cardIndex) => sum + getWinningCardCount(cards[cardIndex]), 0)
-      : 0
-  );
+  return 1 + (matchCount ? getCachedCardCount(card, matchCount): 0);
 };
 
 const result1 = cards.reduce((sum, card) => (
