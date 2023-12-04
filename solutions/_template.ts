@@ -1,5 +1,5 @@
-import { getInputLines } from "../util.js";
+import { getInputLines, logResults } from "../util.js";
 
 const input = getInputLines(import.meta);
 
-console.log('Lines:', input.length);
+logResults(input.length);
