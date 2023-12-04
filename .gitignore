@@ -1,3 +1,4 @@
 *.env
+input
 node_modules
 .vscode
