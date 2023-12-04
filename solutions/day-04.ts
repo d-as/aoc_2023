@@ -38,7 +38,7 @@ const winningCardsCache = new Map<number, number>();
 const getCachedCardCount = (card: Card, matchCount: number): number => {
   const cachedCount = winningCardsCache.get(card.id);
 
-  if (cachedCount) {
+  if (cachedCount !== undefined) {
     return cachedCount;
   }
 
