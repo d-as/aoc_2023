@@ -34,17 +34,14 @@ const parseCard = (line: string): Card | undefined => {
 
 const cards = input.map(parseCard).filter(c => c) as Card[];
 
-const getWinningCards = (card: Card): Card[] => {
+const getWinningCardCount = (card: Card): number => {
   const matchCount = card.yourNumbers.filter(number => card.winningNumbers.includes(number)).length;
 
-  if (matchCount) {
-    return [
-      card,
-      ...range(matchCount, card.id).flatMap(cardIndex => getWinningCards(cards[cardIndex]))
-    ];
-  }
-
-  return [card];
+  return 1 + (
+    matchCount
+      ? range(matchCount, card.id).reduce((sum, cardIndex) => sum + getWinningCardCount(cards[cardIndex]), 0)
+      : 0
+  );
 };
 
 const result1 = cards.reduce((sum, card) => (
@@ -54,6 +51,6 @@ const result1 = cards.reduce((sum, card) => (
   }, 0)
 ), 0);
 
-const result2 = cards.reduce((sum, card) => sum + getWinningCards(card).length, 0);
+const result2 = cards.reduce((sum, card) => sum + getWinningCardCount(card), 0);
 
 logResults(result1, result2);
