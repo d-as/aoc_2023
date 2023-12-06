@@ -167,4 +167,22 @@ export const lastDefined = <T>(items?: T[]): T => (
 
 export const logResults = (...results: number[]): void => {
   results.forEach((result, i) => console.log(`Part ${i + 1}: ${Intl.NumberFormat().format(result)} (${result})`));
-}
+};
+
+export const matchPattern = (line: string, pattern: RegExp): string[] => (
+  line.match(pattern) ?? []
+);
+
+export const matchPatterns = (line: string, ...patterns: RegExp[]): Array<string[] | null> => {
+  let matched = false
+
+  return patterns.map(pattern => {
+    if (matched) {
+      return null;
+    }
+
+    const match = line.match(pattern)?.slice(1) ?? null;
+    matched ??= !!match;
+    return match;
+  });
+};
