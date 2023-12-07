@@ -132,7 +132,7 @@ export const getDayFromFilename = (filename: string): number => {
   return Number(day);
 }
 
-export const getInputLines = (importMeta: ImportMeta): string[] => {
+export const getInputLines = (importMeta: ImportMeta, skipEmptyLines = true): string[] => {
   const filename = fileURLToPath(importMeta.url);
 
   const inputPath = path.join(
@@ -142,7 +142,8 @@ export const getInputLines = (importMeta: ImportMeta): string[] => {
     getInputFileName(getDayFromFilename(filename))
   );
 
-  return fs.readFileSync(inputPath).toString().split('\n');
+  const lines = fs.readFileSync(inputPath).toString().split('\n');
+  return skipEmptyLines ? lines.filter(line => line) : lines;
 };
 
 export const first = <T>(items?: T[]): T | undefined => {
