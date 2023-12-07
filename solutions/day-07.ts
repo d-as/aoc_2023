@@ -123,7 +123,7 @@ const [result1, result2] = [false, true].map(useJokers => (
   input
     .map(line => {
       const [, cards, bid] = line.match(INPUT_REGEX) ?? [];
-      const hand = [...cards] as Card[];
+      const hand = [...cards] as Hand;
 
       return {
         hand,
