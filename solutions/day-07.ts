@@ -112,7 +112,7 @@ const getHandType = (hand: Hand, useJokers: boolean): HandType => {
 };
 
 const getHandScore = (hand: Hand, useJokers: boolean): number => (
-  getHandType(hand, useJokers) * Math.pow(16, 5) + (
+  getHandType(hand, useJokers) * Math.pow(16, hand.length) + (
     hand
       .map((card, i) => getCardValue(card, useJokers) * Math.pow(16, hand.length - i - 1))
       .reduce((a, b) => a + b)
