@@ -44,7 +44,7 @@ const getCardValue = (card: Card, useJokers: boolean): number => {
   return index === -1 ? Number(card) : index + 10;
 };
 
-const getCardCount = (hand: Card[]) => (card: Card): number => (
+const getCardCount = (hand: Hand) => (card: Card): number => (
   hand.filter(c => c === card).length
 );
 
