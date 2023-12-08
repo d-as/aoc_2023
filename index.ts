@@ -30,7 +30,7 @@ import {
 
 dotenv.config();
 
-const { SESSION_COOKIE } = process.env;
+let { SESSION_COOKIE } = process.env;
 
 if (!SESSION_COOKIE) {
   console.log('Missing SESSION_COOKIE in .env');
