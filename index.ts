@@ -6,7 +6,6 @@ import { exec } from 'child_process';
 
 import {
   INPUT_PATH,
-  INPUT_PREFIX,
   PUZZLE_COUNT,
   SOLUTIONS_PATH,
   SOLUTION_PREFIX,
