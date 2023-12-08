@@ -31,23 +31,51 @@ function* createDirectionGenerator(): Generator<[Direction, number], never> {
   }
 }
 
-let direction: Direction;
-let steps: number;
-let node = nodes.get(START_NODE) as Node;
-
-const directions = createDirectionGenerator();
-
 const getNode = (id: string): Node => (
   nodes.get(id) as Node
-)
+);
 
-while (true) {
-  [direction, steps] = directions.next().value;
-  node = getNode(node[direction]);
+const isGhostStartNode = ({ ID }: Node) => (
+  ID.endsWith('A')
+);
 
-  if (node.ID === END_NODE) {
-    break;
+const isGhostEndNode = ({ ID }: Node) => (
+  ID.endsWith('Z')
+);
+
+const gcd = (a: number, b: number): number => (
+  b === 0 ? a : gcd(b, a % b)
+);
+
+const lcm = (a: number, b: number): number => (
+  (a * b) / gcd(a, b)
+);
+
+const multiLcm = (numbers: number[]): number => {
+  const [n] = numbers;
+  return numbers.slice(1).reduce((a, b) => lcm(a, b), n);
+};
+
+const getSteps = (node: Node, isEndNode: (node: Node) => boolean) => {
+  let steps = 0;
+  let direction: Direction;
+  const directions = createDirectionGenerator();
+
+  while (true) {
+    [direction, steps] = directions.next().value;
+    node = getNode(node[direction]);
+  
+    if (isEndNode(node)) {
+      break;
+    }
   }
-}
 
-logResults(steps);
+  return steps;
+};
+
+const result1 = getSteps(getNode(START_NODE), ({ ID }) => ID === END_NODE);
+
+const ghostNodes = Array.from(nodes.values()).filter(isGhostStartNode);
+const result2 = multiLcm(ghostNodes.map(node => getSteps(node, isGhostEndNode)));
+
+logResults(result1, result2);
