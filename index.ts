@@ -33,7 +33,7 @@ dotenv.config();
 const { SESSION_COOKIE } = process.env;
 
 if (!SESSION_COOKIE) {
-  throw new Error('Missing SESSION_COOKIE in .env');
+  console.log('Missing SESSION_COOKIE in .env');
 }
 
 const currentDate = new Date();
@@ -56,7 +56,7 @@ console.log('Next puzzle in:', getNextPuzzleText(currentDate, releasedPuzzleCoun
 const inputFilesToBeFetched = range(releasedPuzzleCount, 1)
   .filter(day => !inputFileExists(day, inputFiles));
 
-if (inputFilesToBeFetched.length > 0) {
+if (SESSION_COOKIE && inputFilesToBeFetched.length > 0) {
   console.log(
     `Fetching ${inputFilesToBeFetched.length} input file${plural(inputFilesToBeFetched)}`
   );
