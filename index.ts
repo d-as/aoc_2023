@@ -103,7 +103,7 @@ const [latestSolution] = fs.readdirSync(SOLUTIONS_PATH)
 if (latestSolution) {
   console.log(`Executing ${latestSolution}:\n`);
 
-  exec(`node --loader ts-node/esm ${path.join(SOLUTIONS_PATH, latestSolution)}`, (error, stdout, stderr) => {
+  exec(`tsx ${path.join(SOLUTIONS_PATH, latestSolution)}`, (error, stdout, stderr) => {
     if (error) {
       return console.error(error);
     } else if (stdout) {
