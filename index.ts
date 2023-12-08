@@ -36,8 +36,6 @@ if (!SESSION_COOKIE) {
   console.log('Missing SESSION_COOKIE in .env');
 }
 
-SESSION_COOKIE = undefined;
-
 const currentDate = new Date();
 const year = Assert.validYear(getYear(currentDate));
 const releasedPuzzleCount = getReleasedPuzzleCount(currentDate);

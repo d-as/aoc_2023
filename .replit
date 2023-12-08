@@ -1,4 +1,4 @@
-run = "tsx index.ts"
+run = "npm run start"
 entrypoint = "index.ts"
 
 [packager]
