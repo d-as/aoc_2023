@@ -61,6 +61,8 @@ if (SESSION_COOKIE && inputFilesToBeFetched.length > 0) {
     `Fetching ${inputFilesToBeFetched.length} input file${plural(inputFilesToBeFetched)}`
   );
 
+  let invalidSessionCookie = false;
+
   Promise.all(
     inputFilesToBeFetched
       .map(day => fetch(getInputURL(year, day), {
@@ -72,7 +74,14 @@ if (SESSION_COOKIE && inputFilesToBeFetched.length > 0) {
     .then(responses => {
       responses.forEach((response, i) => {
         response.text().then(input => {
-          fs.writeFileSync(path.join(INPUT_PATH, getInputFileName(inputFilesToBeFetched[i])), input);
+          if (input.startsWith('Please')) {
+            if (!invalidSessionCookie) {
+              invalidSessionCookie = true;
+              console.log('Invalid session cookie');
+            }
+          } else {
+            fs.writeFileSync(path.join(INPUT_PATH, getInputFileName(inputFilesToBeFetched[i])), input);
+          }
         });
       })
     });
