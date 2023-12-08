@@ -6,6 +6,7 @@ import { exec } from 'child_process';
 
 import {
   INPUT_PATH,
+  INPUT_PREFIX,
   PUZZLE_COUNT,
   SOLUTIONS_PATH,
   SOLUTION_PREFIX,
@@ -105,22 +106,34 @@ if (solutionFilesToBeCreated.length > 0) {
   ));
 }
 
+const sortByFileName = (a: string, b: string) => getDayFromFilename(b) - getDayFromFilename(a);
+
 const [latestSolution] = fs.readdirSync(SOLUTIONS_PATH)
   .filter(file => file.match(new RegExp(`${SOLUTION_PREFIX}\\d{2}`)))
-  .sort((a, b) => getDayFromFilename(b) - getDayFromFilename(a));
+  .sort(sortByFileName);
 
-if (latestSolution) {
-  console.log(`Executing ${latestSolution}:\n`);
+const [latestInput] = fs.readdirSync(INPUT_PATH)
+  .filter(file => file.match(new RegExp(`${INPUT_PREFIX}\\d{2}`)))
+  .sort(sortByFileName);
 
-  exec(`tsx ${path.join(SOLUTIONS_PATH, latestSolution)}`, (error, stdout, stderr) => {
-    if (error) {
-      return console.error(error);
-    } else if (stdout) {
-      console.log(stdout);
-    } else if (stderr) {
-      console.error(stderr);
-    }
-  });  
+if (latestSolution && latestInput) {
+  const [solutionDay, inputDay] = [latestSolution, latestInput].map(getDayFromFilename);
+
+  if (solutionDay === inputDay) {
+    console.log(`Executing ${latestSolution}:\n`);
+
+    exec(`tsx ${path.join(SOLUTIONS_PATH, latestSolution)}`, (error, stdout, stderr) => {
+      if (error) {
+        return console.error(error);
+      } else if (stdout) {
+        console.log(stdout);
+      } else if (stderr) {
+        console.error(stderr);
+      }
+    });
+  } else {
+    console.log('Missing input or solution file. Try running the script again.');
+  }
 } else {
   console.log('No solutions found');
 }
