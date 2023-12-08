@@ -30,11 +30,13 @@ import {
 
 dotenv.config();
 
-const { SESSION_COOKIE } = process.env;
+let { SESSION_COOKIE } = process.env;
 
 if (!SESSION_COOKIE) {
   console.log('Missing SESSION_COOKIE in .env');
 }
+
+SESSION_COOKIE = undefined;
 
 const currentDate = new Date();
 const year = Assert.validYear(getYear(currentDate));
@@ -103,7 +105,7 @@ const [latestSolution] = fs.readdirSync(SOLUTIONS_PATH)
 if (latestSolution) {
   console.log(`Executing ${latestSolution}:\n`);
 
-  exec(`node --loader ts-node/esm ${path.join(SOLUTIONS_PATH, latestSolution)}`, (error, stdout, stderr) => {
+  exec(`tsx ${path.join(SOLUTIONS_PATH, latestSolution)}`, (error, stdout, stderr) => {
     if (error) {
       return console.error(error);
     } else if (stdout) {
