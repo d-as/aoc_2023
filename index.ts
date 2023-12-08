@@ -112,14 +112,10 @@ const [latestSolution] = fs.readdirSync(SOLUTIONS_PATH)
   .filter(file => file.match(new RegExp(`${SOLUTION_PREFIX}\\d{2}`)))
   .sort(sortByFileName);
 
-const [latestInput] = fs.readdirSync(INPUT_PATH)
-  .filter(file => file.match(new RegExp(`${INPUT_PREFIX}\\d{2}`)))
-  .sort(sortByFileName);
+if (latestSolution) {
+  const input = fs.readFileSync(path.join(INPUT_PATH, getInputFileName(getDayFromFilename(latestSolution))));
 
-if (latestSolution && latestInput) {
-  const [solutionDay, inputDay] = [latestSolution, latestInput].map(getDayFromFilename);
-
-  if (solutionDay === inputDay) {
+  if (input) {
     console.log(`Executing ${latestSolution}:\n`);
 
     exec(`tsx ${path.join(SOLUTIONS_PATH, latestSolution)}`, (error, stdout, stderr) => {
@@ -132,7 +128,7 @@ if (latestSolution && latestInput) {
       }
     });
   } else {
-    console.log('Missing input or solution file. Try running the script again.');
+    console.log('Missing input file. Try running the script again.');
   }
 } else {
   console.log('No solutions found');
