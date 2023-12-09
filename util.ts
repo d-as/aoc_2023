@@ -175,7 +175,7 @@ export const matchPattern = (line: string, pattern: RegExp): string[] => (
 );
 
 export const matchPatterns = (line: string, ...patterns: RegExp[]): Array<string[] | null> => {
-  let matched = false
+  let matched = false;
 
   return patterns.map(pattern => {
     if (matched) {
