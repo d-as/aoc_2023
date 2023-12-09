@@ -112,9 +112,9 @@ const [latestSolution] = fs.readdirSync(SOLUTIONS_PATH)
   .sort(sortByFileName);
 
 if (latestSolution) {
-  const input = fs.readFileSync(path.join(INPUT_PATH, getInputFileName(getDayFromFilename(latestSolution))));
+  // const input = fs.readFileSync(path.join(INPUT_PATH, getInputFileName(getDayFromFilename(latestSolution))));
 
-  if (input) {
+  if (true) {
     console.log(`Executing ${latestSolution}:\n`);
 
     exec(`tsx ${path.join(SOLUTIONS_PATH, latestSolution)}`, (error, stdout, stderr) => {
