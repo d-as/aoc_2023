@@ -1,7 +1,6 @@
 import { firstDefined, getInputLines, lastDefined, logResults } from "../util.js";
 
 const input = getInputLines(import.meta);
-
 const histories = input.map(line => line.split(' ').map(Number));
 
 const differences = histories.map(history => {
@@ -25,19 +24,18 @@ const predictions1 = differences.map(diffs => (
     .reduce((a, b) => a + b)
 ));
 
-const predictions2 = differences
-  .map(diffs => {
-    let prediction = 0;
-    let diff = diffs.reverse().map(firstDefined);
+const predictions2 = differences.map(diffs => {
+  let prediction = 0;
+  let diff = diffs.reverse().map(firstDefined);
 
-    while (diff.length >= 2) {
-      const [a, b] = diff;
-      prediction = b - a;
-      diff = [prediction, ...diff.slice(2)];
-    }
+  while (diff.length >= 2) {
+    const [a, b] = diff;
+    prediction = b - a;
+    diff = [prediction, ...diff.slice(2)];
+  }
 
-    return prediction;
-  });
+  return prediction;
+});
 
 
 logResults(...[predictions1, predictions2].map(predictions => predictions.reduce((a, b) => a + b)));
