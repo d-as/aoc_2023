@@ -1,7 +1,7 @@
 import { firstDefined, getInputLines, logResults, range } from "../util.js";
 
 const originalGrid = getInputLines(import.meta).map(line => [...line]) as Grid;
-const originalWidth = firstDefined(originalGrid).length;
+const originalSize = firstDefined(originalGrid).length;
 
 enum Tile {
   EMPTY  = '.',
@@ -19,7 +19,7 @@ const GRID_TYPES = Object.values(GridType);
 const GRID_EXPANSION_RATES: Record<GridType, number> = {
   [GridType.ORIGINAL]:      1,
   [GridType.EXPANDED]:      2,
-  [GridType.MEGA_EXPANDED]: originalWidth,
+  [GridType.MEGA_EXPANDED]: originalSize,
 };
 
 interface Galaxy {
@@ -31,11 +31,8 @@ type Grid = Tile[][];
 type Coordinate = [number, number];
 
 const getTrueDistance = (distance: number): number => {
-  if (distance >= originalWidth) {
-    const gapCount = Math.floor(distance / originalWidth);
-    return distance + (gapCount * (1e6 - originalWidth));
-  }
-  return distance;
+  const gapCount = Math.floor(distance / originalSize);
+  return distance + (gapCount * (1e6 - originalSize));
 };
 
 class GalaxyPair {
@@ -62,7 +59,7 @@ class GalaxyPair {
 }
 
 const expandHorizontally = (grid: Grid, gridType: GridType): Grid => {
-  const expandedColumns = new Set(range(originalWidth).filter(x => grid.every(line => line[x] === Tile.EMPTY)));
+  const expandedColumns = new Set(range(originalSize).filter(x => grid.every(line => line[x] === Tile.EMPTY)));
 
   return grid.map(line => [...line].flatMap((tile, x) => (
     expandedColumns.has(x) ? range(GRID_EXPANSION_RATES[gridType]).map(() => tile) : [tile]
