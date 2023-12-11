@@ -104,15 +104,9 @@ const populateGalaxies = (coordinates: Record<GridType, Coordinate[]>): Map<numb
 const grids = createGridRecord(gridType => expandGrid(originalGrid, gridType));
 const galaxies = populateGalaxies(createGridRecord(gridType => findGalaxyCoordinates(grids[gridType])));
 
-const getGalaxyById = (id: number): Galaxy => {
-  const galaxy = galaxies.get(id);
-
-  if (!galaxy) {
-    throw new Error(`No galaxy with ID: ${id}`);
-  }
-
-  return galaxy;
-};
+const getGalaxyById = (id: number): Galaxy => (
+  galaxies.get(id) as Galaxy
+);
 
 const galaxyPairs = new Map(
   range(galaxies.size).flatMap(a => (
