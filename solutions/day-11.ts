@@ -30,10 +30,6 @@ interface Galaxy {
 type Grid = Tile[][];
 type Coordinate = [number, number];
 
-const getTrueDistance = (distance: number): number => (
-  distance + (Math.floor(distance / originalSize) * (1e6 - originalSize))
-);
-
 class GalaxyPair {
   public constructor (
     private readonly a: Galaxy,
@@ -53,7 +49,11 @@ class GalaxyPair {
       ...this.b.coordinates[gridType],
     ];
 
-    return getTrueDistance(Math.abs(x2 - x1)) + getTrueDistance(Math.abs(y2 - y1));
+    return this.getTrueDistance(Math.abs(x2 - x1)) + this.getTrueDistance(Math.abs(y2 - y1));
+  }
+
+  private getTrueDistance (distance: number): number {
+    return distance + (Math.floor(distance / originalSize) * (1e6 - originalSize)); 
   }
 }
 
