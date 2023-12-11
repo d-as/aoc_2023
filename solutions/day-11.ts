@@ -30,10 +30,9 @@ interface Galaxy {
 type Grid = Tile[][];
 type Coordinate = [number, number];
 
-const getTrueDistance = (distance: number): number => {
-  const gapCount = Math.floor(distance / originalSize);
-  return distance + (gapCount * (1e6 - originalSize));
-};
+const getTrueDistance = (distance: number): number => (
+  distance + (Math.floor(distance / originalSize) * (1e6 - originalSize))
+);
 
 class GalaxyPair {
   public constructor (
