@@ -233,18 +233,12 @@ const getOutsideCoordinateSet = (): Set<string> => {
     coordinates.push(...nextCoordinates);
   }
 
-  return (
-    new Set(
-      Array.from(
-        new Set(
-          Array.from(visitedCoordinateSet)
-            .map(deserializeCoordinate)
-            .map(getRealCoordinate)
-            .map(serializeCoordinate)
-        )
-      )
-        .filter(coordinate => !loopCoordinateSet.has(coordinate))
-    )
+  return new Set(
+    Array.from(visitedCoordinateSet)
+      .map(deserializeCoordinate)
+      .map(getRealCoordinate)
+      .map(serializeCoordinate)
+      .filter(coordinate => !loopCoordinateSet.has(coordinate))
   );
 };
 
