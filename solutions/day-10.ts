@@ -193,7 +193,7 @@ const loop = getLoop(findStartPosition());
 const result1 = loop.length / 2;
 
 const loopCoordinateSet = new Set(loop.map(serializeCoordinate));
-const largeGrid: Grid = range(largeHeight).map(() => '.'.repeat(largeWidth).split('') as Tile[]);
+const largeGrid: Grid = range(largeHeight).map(() => Tile.GROUND.repeat(largeWidth).split('') as Tile[]);
 
 smallGrid.forEach((line, y) => {
   [...line].forEach((tile, x) => {
