@@ -106,7 +106,6 @@ const populateGalaxies = (coordinates: Record<GridType, Coordinate[]>): Map<numb
 );
 
 const grids = createGridRecord(gridType => expandGrid(originalGrid, gridType));
-
 const galaxies = populateGalaxies(createGridRecord(gridType => findGalaxyCoordinates(grids[gridType])));
 
 const getGalaxyById = (id: number): Galaxy => {
