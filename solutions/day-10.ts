@@ -1,8 +1,10 @@
 import { first, getInputLines, logResults, range } from "../util.js";
 
-const input = getInputLines(import.meta);
-const width = first(input)?.length ?? 0;
-const height = input.length;
+const smallGrid = getInputLines(import.meta).map(line => [...line]) as Grid;
+const smallWidth = first(smallGrid)?.length ?? 0;
+const smallHeight = smallGrid.length;
+const largeWidth = smallWidth * 3;
+const largeHeight = smallHeight * 3;
 
 enum Tile {
   GROUND          = '.',
@@ -14,6 +16,8 @@ enum Tile {
   SOUTH_EAST_BEND = 'F',
   SOUTH_WEST_BEND = '7',
 }
+
+type Grid = Tile[][];
 
 enum Direction {
   LEFT  = 'left',
@@ -71,32 +75,83 @@ const ALLOWED_MOVES: Partial<Record<Tile, Partial<Record<Direction, Tile[]>>>> =
   },
 };
 
+const LARGE_TILES: Record<Tile, Array<`${Tile}${Tile}${Tile}`>> = {
+  [Tile.GROUND]:          [
+                            '...',
+                            '...',
+                            '...',
+                          ],
+  [Tile.START_POSITION]:  [
+                            '.S.',
+                            'SSS',
+                            '.S.',
+                          ],
+  [Tile.VERTICAL_PIPE]:   [
+                            '.|.',
+                            '.|.',
+                            '.|.',
+                          ],
+  [Tile.HORIZONTAL_PIPE]: [
+                            '...',
+                            '---',
+                            '...',
+                          ],
+  [Tile.NORTH_EAST_BEND]: [
+                            '.|.',
+                            '.L-',
+                            '...',
+                          ],
+  [Tile.NORTH_WEST_BEND]: [
+                            '.|.',
+                            '-J.',
+                            '...',
+                          ],
+  [Tile.SOUTH_EAST_BEND]: [
+                            '...',
+                            '.F-',
+                            '.|.',
+                          ],
+  [Tile.SOUTH_WEST_BEND]: [
+                            '...',
+                            '-7.',
+                            '.|.',
+                          ],
+};
+
 type Coordinate = [number, number];
 
 const coordinateEquals = ([x1, y1]: Coordinate, [x2, y2]: Coordinate): boolean => (
   x1 === x2 && y1 === y2
 );
 
-const getTile = ([x, y]: Coordinate): Tile | undefined => (
-  input[y]?.[x] as Tile
+const getTile = (grid: Grid, [x, y]: Coordinate): Tile | undefined => (
+  grid[y]?.[x] as Tile
 );
 
 const getNextCoordinate = (coordinate: Coordinate, direction: Direction): Coordinate => (
   coordinate.map((n, i) => n + DIRECTION_OFFSETS[direction][i]) as Coordinate
 );
 
-const getValidDirections = (coordinate: Coordinate): Direction[] => (
+const getNextTile = (grid: Grid, coordinate: Coordinate, direction: Direction): Tile | undefined => (
+  getTile(grid, getNextCoordinate(coordinate, direction))
+);
+
+const getValidLoopDirections = (coordinate: Coordinate): Direction[] => (
   DIRECTIONS.filter(direction => (
-    ALLOWED_MOVES[getTile(coordinate) ?? Tile.GROUND]?.[direction]?.includes(
-      getTile(getNextCoordinate(coordinate, direction)) as Tile
+    ALLOWED_MOVES[getTile(smallGrid, coordinate) ?? Tile.GROUND]?.[direction]?.includes(
+      getNextTile(smallGrid, coordinate, direction) as Tile
     )
   ))
 );
 
+const getValidGridDirections = (grid: Grid, coordinate: Coordinate): Direction[] => (
+  DIRECTIONS.filter(direction => getNextTile(grid, coordinate, direction) === Tile.GROUND)
+);
+
 const findStartPosition = (): Coordinate => {
-  for (let x = 0; x < width; x++) {
-    for (let y = 0; y < height; y++) {
-      if (getTile([x, y]) === Tile.START_POSITION) {
+  for (let x = 0; x < smallWidth; x++) {
+    for (let y = 0; y < smallHeight; y++) {
+      if (getTile(smallGrid, [x, y]) === Tile.START_POSITION) {
         return [x, y];
       }
     }
@@ -104,20 +159,15 @@ const findStartPosition = (): Coordinate => {
   throw new Error('Start position not found');
 };
 
-const getPath = (startPosition: Coordinate): Coordinate[] => {
-  const path: Coordinate[] = [startPosition];
+const getLoop = (startPosition: Coordinate): Coordinate[] => {
+  const loop: Coordinate[] = [startPosition];
   let coordinate = startPosition;
   let direction: Direction | undefined;
 
   while (true) {
-    [direction] = getValidDirections(coordinate).filter(d => (
+    [direction] = getValidLoopDirections(coordinate).filter(d => (
       d !== (direction !== undefined ? OPPOSITE_DIRECTIONS[direction] : undefined)
     ));
-
-    if (direction === undefined) {
-      console.log('No valid directions');
-      break;
-    }
 
     coordinate = getNextCoordinate(coordinate, direction);
 
@@ -125,12 +175,89 @@ const getPath = (startPosition: Coordinate): Coordinate[] => {
       break;
     }
 
-    path.push(coordinate);
+    loop.push(coordinate);
   }
 
-  return path;
+  return loop;
 };
 
-const result1 = getPath(findStartPosition()).length / 2;
+const serializeCoordinate = (coordinate: Coordinate): string => (
+  coordinate.join(',')
+);
 
-logResults(result1);
+const deserializeCoordinate = (coordinate: string): Coordinate => (
+  coordinate.split(',').map(Number) as Coordinate
+);
+
+const loop = getLoop(findStartPosition());
+const result1 = loop.length / 2;
+
+const loopCoordinateSet = new Set(loop.map(serializeCoordinate));
+const largeGrid: Grid = range(largeHeight).map(() => '.'.repeat(largeWidth).split('') as Tile[]);
+
+smallGrid.forEach((line, y) => {
+  [...line].forEach((tile, x) => {
+    if (!loopCoordinateSet.has(serializeCoordinate([x, y]))) {
+      tile = Tile.GROUND;
+    }
+
+    LARGE_TILES[tile as Tile].forEach((row, yOffset) => {
+      [...row].forEach((tile, xOffset) => {
+        largeGrid[(y * 3) + yOffset][(x * 3) + xOffset] = tile as Tile;
+      });
+    });
+  });
+});
+
+const getRealCoordinate = ([x, y]: Coordinate): Coordinate => (
+  [Math.floor(x / 3), Math.floor(y / 3)]
+);
+
+const getOutsideCoordinateSet = (): Set<string> => {
+  const visitedCoordinateSet = new Set<string>();
+  const startCoordinate: Coordinate = [0, 0];
+  const coordinates = [startCoordinate];
+  visitedCoordinateSet.add(serializeCoordinate(startCoordinate));
+
+  while (coordinates.length) {
+    const [coordinate] = coordinates;
+    coordinates.shift();
+    const validDirections = getValidGridDirections(largeGrid, coordinate);
+  
+    const nextCoordinates =
+      validDirections
+        .map(direction => getNextCoordinate(coordinate, direction))
+        .filter(coordinate => !visitedCoordinateSet.has(serializeCoordinate(coordinate)));
+
+    nextCoordinates.forEach(nextCoordinate => visitedCoordinateSet.add(serializeCoordinate(nextCoordinate)));
+    coordinates.push(...nextCoordinates);
+  }
+
+  return (
+    new Set(
+      Array.from(
+        new Set(
+          Array.from(visitedCoordinateSet)
+            .map(deserializeCoordinate)
+            .map(getRealCoordinate)
+            .map(serializeCoordinate)
+        )
+      )
+        .filter(coordinate => !loopCoordinateSet.has(coordinate))
+    )
+  );
+};
+
+const outsideCoordinateSet = getOutsideCoordinateSet();
+
+const result2 = range(smallHeight).flatMap(y => (
+  range(smallWidth)
+    .filter(x => {
+      const coordinate = serializeCoordinate([x, y]);
+      return !loopCoordinateSet.has(coordinate) && !outsideCoordinateSet.has(coordinate);
+    })
+    .length
+))
+  .reduce((a, b) => a + b);
+
+logResults(result1, result2);
