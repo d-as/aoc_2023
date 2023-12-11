@@ -9,11 +9,18 @@ enum Tile {
 }
 
 enum GridType {
-  ORIGINAL = 'original',
-  EXPANDED = 'expanded',
+  ORIGINAL      = 'original',
+  EXPANDED      = 'expanded',
+  MEGA_EXPANDED = 'mega_expanded',
 }
 
 const GRID_TYPES = Object.values(GridType);
+
+const GRID_EXPANSION_RATES: Record<GridType, number> = {
+  [GridType.ORIGINAL]:      1,
+  [GridType.EXPANDED]:      2,
+  [GridType.MEGA_EXPANDED]: originalWidth,
+};
 
 interface Galaxy {
   id: number;
@@ -22,6 +29,14 @@ interface Galaxy {
 
 type Grid = Tile[][];
 type Coordinate = [number, number];
+
+const getTrueDistance = (distance: number): number => {
+  if (distance >= originalWidth) {
+    const gapCount = Math.floor(distance / originalWidth);
+    return distance + (gapCount * (1e6 - originalWidth));
+  }
+  return distance;
+};
 
 class GalaxyPair {
   public constructor (
@@ -42,17 +57,24 @@ class GalaxyPair {
       ...this.b.coordinates[gridType],
     ];
 
-    return Math.abs(x2 - x1) + Math.abs(y2 - y1);
+    return getTrueDistance(Math.abs(x2 - x1)) + getTrueDistance(Math.abs(y2 - y1));
   }
 }
 
-const expandHorizontally = (grid: Grid): Grid => {
+const expandHorizontally = (grid: Grid, gridType: GridType): Grid => {
   const expandedColumns = new Set(range(originalWidth).filter(x => grid.every(line => line[x] === Tile.EMPTY)));
-  return grid.map(line => [...line].flatMap((tile, x) => expandedColumns.has(x) ? [tile, tile] : [tile]));
+
+  return grid.map(line => [...line].flatMap((tile, x) => (
+    expandedColumns.has(x) ? range(GRID_EXPANSION_RATES[gridType]).map(() => tile) : [tile]
+  )));
 };
 
-const expandVertically = (grid: Grid): Grid => (
-  grid.flatMap(line => line.includes(Tile.GALAXY) ? [line] : [line, line])
+const expandVertically = (grid: Grid, gridType: GridType): Grid => (
+  grid.flatMap(line => line.includes(Tile.GALAXY) ? [line] : range(GRID_EXPANSION_RATES[gridType]).map(() => line))
+);
+
+const expandGrid = (grid: Grid, gridType: GridType): Grid => (
+  gridType === GridType.ORIGINAL ? grid : expandHorizontally(expandVertically(grid, gridType), gridType)
 );
 
 const findGalaxyCoordinates = (grid: Grid): Coordinate[] => {
@@ -83,10 +105,7 @@ const populateGalaxies = (coordinates: Record<GridType, Coordinate[]>): Map<numb
   ])))
 );
 
-const grids: Record<GridType, Grid> = {
-  [GridType.ORIGINAL]: originalGrid,
-  [GridType.EXPANDED]: expandHorizontally(expandVertically(originalGrid)),
-};
+const grids = createGridRecord(gridType => expandGrid(originalGrid, gridType));
 
 const galaxies = populateGalaxies(createGridRecord(gridType => findGalaxyCoordinates(grids[gridType])));
 
@@ -109,8 +128,10 @@ const galaxyPairs = new Map(
     .map(pair => [pair.getKey(), pair]),
 );
 
-const result1 = Array.from(galaxyPairs.values()).reduce((distance, pair) => (
-  distance + pair.getDistance(GridType.EXPANDED)
-), 0);
+const results = GRID_TYPES.slice(1).map(gridType => (
+  Array.from(galaxyPairs.values()).reduce((distance, pair) => (
+    distance + pair.getDistance(gridType)
+  ), 0)
+));
 
-logResults(result1);
+logResults(...results);
