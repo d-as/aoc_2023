@@ -39,18 +39,22 @@ const isValidDamagedSprings = (springArrangement: string, expectedDamagedSpringC
   );
 };
 
-const result1 = input.reduce((sum, line) => {
-  const [springs, damagedSpringCountsStr] = line.split(' ');
-  const damagedSpringCounts = damagedSpringCountsStr.split(',').map(Number);
+const getValidArrangementCount = (springs: string, damagedSpringCounts: number[]): number => {
   const unknownCount = [...springs].filter(spring => spring === SpringType.UNKNOWN).length;
 
-  return sum + new Set(
+  return new Set(
     range(Math.pow(2, unknownCount))
       .map(n => [...n.toString(2).padStart(unknownCount, '0')].reduce((arrangement, digit) => (
         arrangement.replace(SpringType.UNKNOWN, SPRING_TYPES[Number(digit)])
       ), springs))
       .filter(springArrangement => isValidDamagedSprings(springArrangement, damagedSpringCounts)),
-  ).size;
+  )
+    .size;
+};
+
+const result1 = input.reduce((sum, line) => {
+  const [springs, damagedSpringCounts] = line.split(' ');
+  return sum + getValidArrangementCount(springs, damagedSpringCounts.split(',').map(Number));
 }, 0);
 
 logResults(result1);
